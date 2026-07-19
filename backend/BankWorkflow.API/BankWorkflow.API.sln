@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.37502.11 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankWorkflow.API", "BankWorkflow.API\BankWorkflow.API.csproj", "{830042EC-18D7-442D-9E8D-C29CD6F38485}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{830042EC-18D7-442D-9E8D-C29CD6F38485}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{830042EC-18D7-442D-9E8D-C29CD6F38485}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{830042EC-18D7-442D-9E8D-C29CD6F38485}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{830042EC-18D7-442D-9E8D-C29CD6F38485}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9D271BB8-F9AB-40ED-83A3-61B80E18415B}
+	EndGlobalSection
+EndGlobal

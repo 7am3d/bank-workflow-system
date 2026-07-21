@@ -1,0 +1,16 @@
+﻿namespace BankWorkflow.API.DTOs.User;
+
+public class UpdateUserDto
+{
+    public string FirstName { get; set; } = string.Empty;
+
+    public string LastName { get; set; } = string.Empty;
+
+    public string Email { get; set; } = string.Empty;
+
+    public int RoleId { get; set; }
+
+    public int DepartmentId { get; set; }
+
+    public bool IsActive { get; set; }
+}

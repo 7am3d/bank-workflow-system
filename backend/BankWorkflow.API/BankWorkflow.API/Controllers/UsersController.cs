@@ -7,7 +7,7 @@ namespace BankWorkflow.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+[Authorize(Roles = "Admin")]
 public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
@@ -41,44 +41,24 @@ public class UsersController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<UserDto>> Create(CreateUserDto request)
     {
-        try
-        {
-            var user = await _userService.CreateAsync(request);
+        var user = await _userService.CreateAsync(request);
 
-            return CreatedAtAction(
-                nameof(GetById),
-                new { id = user.Id },
-                user);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new
-            {
-                message = ex.Message
-            });
-        }
+        return CreatedAtAction(
+            nameof(GetById),
+            new { id = user.Id },
+            user);
     }
 
     // PUT: api/users/5
     [HttpPut("{id:int}")]
     public async Task<ActionResult<UserDto>> Update(int id, UpdateUserDto request)
     {
-        try
-        {
-            var user = await _userService.UpdateAsync(id, request);
+        var user = await _userService.UpdateAsync(id, request);
 
-            if (user is null)
-                return NotFound();
+        if (user is null)
+            return NotFound();
 
-            return Ok(user);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new
-            {
-                message = ex.Message
-            });
-        }
+        return Ok(user);
     }
 
     // DELETE: api/users/5

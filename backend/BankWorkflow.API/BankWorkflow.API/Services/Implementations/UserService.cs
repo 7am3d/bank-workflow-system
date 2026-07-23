@@ -2,7 +2,7 @@
 using BankWorkflow.API.Models;
 using BankWorkflow.API.Repositories.Interfaces;
 using BankWorkflow.API.Services.Interfaces;
-using System.Linq;
+using BankWorkflow.API.Common.Mappers;
 
 namespace BankWorkflow.API.Services.Implementations;
 
@@ -50,16 +50,10 @@ public class UserService : IUserService
         await _userRepository.AddAsync(user);
         await _userRepository.SaveChangesAsync();
 
-        return new UserDto
-        {
-            Id = user.Id,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            Email = user.Email,
-            Role = role.Name,
-            Department = department.Name,
-            IsActive = user.IsActive
-        };
+        user.Role = role;
+        user.Department = department;
+
+        return UserMapper.ToDto(user);
     }
 
     public async Task<bool> DeactivateAsync(int id)
@@ -83,16 +77,9 @@ public class UserService : IUserService
     {
         var users = await _userRepository.GetAllAsync();
 
-        return users.Select(user => new UserDto
-        {
-            Id = user.Id,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            Email = user.Email,
-            Role = user.Role.Name,
-            Department = user.Department.Name,
-            IsActive = user.IsActive
-        }).ToList();
+        return users
+            .Select(UserMapper.ToDto)
+            .ToList();
     }
 
     public async Task<UserDto?> GetByIdAsync(int id)
@@ -102,16 +89,7 @@ public class UserService : IUserService
         if (user is null)
             return null;
 
-        return new UserDto
-        {
-            Id = user.Id,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            Email = user.Email,
-            Role = user.Role.Name,
-            Department = user.Department.Name,
-            IsActive = user.IsActive
-        };
+        return UserMapper.ToDto(user);
     }
 
     public async Task<UserDto?> UpdateAsync(int id, UpdateUserDto request)
@@ -152,15 +130,9 @@ public class UserService : IUserService
         _userRepository.Update(user);
         await _userRepository.SaveChangesAsync();
 
-        return new UserDto
-        {
-            Id = user.Id,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            Email = user.Email,
-            Role = role.Name,
-            Department = department.Name,
-            IsActive = user.IsActive
-        };
+        user.Role = role;
+        user.Department = department;
+
+        return UserMapper.ToDto(user);
     }
 }

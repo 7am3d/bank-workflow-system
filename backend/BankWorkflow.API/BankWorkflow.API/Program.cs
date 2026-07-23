@@ -3,6 +3,7 @@ using BankWorkflow.API.Repositories.Implementations;
 using BankWorkflow.API.Repositories.Interfaces;
 using BankWorkflow.API.Services.Implementations;
 using BankWorkflow.API.Services.Interfaces;
+using BankWorkflow.API.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -122,6 +123,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Global Exception Handler
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 

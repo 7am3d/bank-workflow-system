@@ -1,13 +1,14 @@
 using BankWorkflow.API.Data;
+using BankWorkflow.API.Middleware;
 using BankWorkflow.API.Repositories.Implementations;
 using BankWorkflow.API.Repositories.Interfaces;
 using BankWorkflow.API.Services.Implementations;
 using BankWorkflow.API.Services.Interfaces;
-using BankWorkflow.API.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,16 +24,20 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Dependency Injection
 // ==========================
 
+builder.Services.AddHttpContextAccessor();
+
 // Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRequestTypeRepository, RequestTypeRepository>();
 
 // Services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IRequestTypeRepository, RequestTypeRepository>();
 builder.Services.AddScoped<IRequestTypeService, RequestTypeService>();
-
+builder.Services.AddScoped<IWorkflowRequestRepository, WorkflowRequestRepository>();
+builder.Services.AddScoped<IWorkflowRequestService, WorkflowRequestService>();
 // ==========================
 // JWT Authentication
 // ==========================
@@ -62,7 +67,14 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddControllers();
+
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(
+            new JsonStringEnumConverter());
+    });
 
 // ==========================
 // Swagger

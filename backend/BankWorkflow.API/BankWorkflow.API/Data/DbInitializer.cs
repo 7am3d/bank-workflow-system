@@ -1,5 +1,4 @@
 ﻿using BankWorkflow.API.Models;
-using BCrypt.Net;
 using Microsoft.EntityFrameworkCore;
 
 namespace BankWorkflow.API.Data;
@@ -21,7 +20,6 @@ public static class DbInitializer
 
         await context.SaveChangesAsync();
 
-        // Seed administrator user
         if (!await context.Users.AnyAsync())
         {
             var adminRole = await context.Roles
@@ -37,6 +35,7 @@ public static class DbInitializer
                 Email = "admin@bankworkflow.com",
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin@123"),
                 IsActive = true,
+                CreatedAt = DateTime.UtcNow,
                 RoleId = adminRole.Id,
                 DepartmentId = itDepartment.Id
             };

@@ -21,4 +21,6 @@ public interface IUserRepository
     void Update(User user);
 
     Task SaveChangesAsync();
+
+    Task<User?> GetFirstByRoleAsync(int roleId);
 }

@@ -12,13 +12,13 @@ public class WorkflowStepConfiguration : IEntityTypeConfiguration<WorkflowStep>
 
         builder.HasKey(ws => ws.Id);
 
-        builder.Property(ws => ws.StepNumber)
+        builder.Property(ws => ws.Sequence)
             .IsRequired();
 
         builder.Property(ws => ws.Status)
             .IsRequired();
 
-        builder.Property(ws => ws.ApprovedAt);
+        builder.Property(ws => ws.CompletedAt);
 
         builder.HasOne(ws => ws.WorkflowRequest)
             .WithMany(wr => wr.WorkflowSteps)

@@ -70,4 +70,10 @@ public class UserRepository : IUserRepository
     {
         await _context.SaveChangesAsync();
     }
+
+    public async Task<User?> GetFirstByRoleAsync(int roleId)
+    {
+        return await _context.Users
+            .FirstOrDefaultAsync(u => u.RoleId == roleId && u.IsActive);
+    }
 }

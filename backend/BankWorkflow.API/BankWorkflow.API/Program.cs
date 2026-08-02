@@ -38,6 +38,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRequestTypeService, RequestTypeService>();
 builder.Services.AddScoped<IWorkflowRequestRepository, WorkflowRequestRepository>();
 builder.Services.AddScoped<IWorkflowRequestService, WorkflowRequestService>();
+builder.Services.AddScoped<IWorkflowStepRepository, WorkflowStepRepository>();
+builder.Services.AddScoped<IWorkflowApprovalService, WorkflowApprovalService>();
 // ==========================
 // JWT Authentication
 // ==========================

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BankWorkflow.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260719221511_InitialCreate")]
+    [Migration("20260802165817_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -294,19 +294,19 @@ namespace BankWorkflow.API.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("ApprovedAt")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<int?>("ApproverUserId")
                         .HasColumnType("integer");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("RoleId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Status")
+                    b.Property<int>("Sequence")
                         .HasColumnType("integer");
 
-                    b.Property<int>("StepNumber")
+                    b.Property<int>("Status")
                         .HasColumnType("integer");
 
                     b.Property<int>("WorkflowRequestId")

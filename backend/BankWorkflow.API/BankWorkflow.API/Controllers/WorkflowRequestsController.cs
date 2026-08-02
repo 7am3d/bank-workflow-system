@@ -11,10 +11,14 @@ namespace BankWorkflow.API.Controllers;
 public class WorkflowRequestsController : ControllerBase
 {
     private readonly IWorkflowRequestService _service;
+    private readonly IWorkflowApprovalService _approvalService;
 
-    public WorkflowRequestsController(IWorkflowRequestService service)
+    public WorkflowRequestsController(
+        IWorkflowRequestService service,
+        IWorkflowApprovalService approvalService)
     {
         _service = service;
+        _approvalService = approvalService;
     }
 
     [HttpGet]
@@ -49,5 +53,13 @@ public class WorkflowRequestsController : ControllerBase
             nameof(GetById),
             new { id = request.Id },
             request);
+    }
+
+    [HttpPost("{id:int}/approve")]
+    public async Task<IActionResult> Approve(int id)
+    {
+        await _approvalService.ApproveAsync(id);
+
+        return NoContent();
     }
 }

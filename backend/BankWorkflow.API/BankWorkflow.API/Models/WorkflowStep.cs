@@ -6,11 +6,11 @@ public class WorkflowStep
 {
     public int Id { get; set; }
 
-    public int StepNumber { get; set; }
+    public int Sequence { get; set; }
 
     public RequestStatus Status { get; set; } = RequestStatus.Pending;
 
-    public DateTime? ApprovedAt { get; set; }
+    public DateTime? CompletedAt { get; set; }
 
     // Foreign Keys
     public int WorkflowRequestId { get; set; }

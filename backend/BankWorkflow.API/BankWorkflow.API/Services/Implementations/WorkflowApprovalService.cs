@@ -9,13 +9,15 @@ public class WorkflowApprovalService : IWorkflowApprovalService
 {
     private readonly IWorkflowStepRepository _workflowStepRepository;
     private readonly IUserRepository _userRepository;
-
+    private readonly ICurrentUserService _currentUser;
     public WorkflowApprovalService(
-        IWorkflowStepRepository workflowStepRepository,
-        IUserRepository userRepository)
+    IWorkflowStepRepository workflowStepRepository,
+    IUserRepository userRepository,
+    ICurrentUserService currentUser)
     {
         _workflowStepRepository = workflowStepRepository;
         _userRepository = userRepository;
+        _currentUser = currentUser;
     }
 
     public async Task InitializeWorkflowAsync(WorkflowRequest workflowRequest)
@@ -60,6 +62,12 @@ public class WorkflowApprovalService : IWorkflowApprovalService
 
         if (currentStep == null)
             throw new InvalidOperationException("No pending workflow step found.");
+
+        if (currentStep.ApproverUserId != _currentUser.UserId)
+        {
+            throw new UnauthorizedAccessException(
+                "You are not assigned to approve this workflow.");
+        }
 
         currentStep.Status = RequestStatus.Approved;
         currentStep.CompletedAt = DateTime.UtcNow;

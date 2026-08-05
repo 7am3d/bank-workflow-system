@@ -29,6 +29,9 @@ builder.Services.AddHttpContextAccessor();
 // Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRequestTypeRepository, RequestTypeRepository>();
+builder.Services.AddScoped<IWorkflowRequestRepository, WorkflowRequestRepository>();
+builder.Services.AddScoped<IWorkflowStepRepository, WorkflowStepRepository>();
+builder.Services.AddScoped<IWorkflowHistoryRepository, WorkflowHistoryRepository>();
 
 // Services
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -36,10 +39,9 @@ builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRequestTypeService, RequestTypeService>();
-builder.Services.AddScoped<IWorkflowRequestRepository, WorkflowRequestRepository>();
 builder.Services.AddScoped<IWorkflowRequestService, WorkflowRequestService>();
-builder.Services.AddScoped<IWorkflowStepRepository, WorkflowStepRepository>();
 builder.Services.AddScoped<IWorkflowApprovalService, WorkflowApprovalService>();
+builder.Services.AddScoped<IWorkflowHistoryService, WorkflowHistoryService>();
 // ==========================
 // JWT Authentication
 // ==========================

@@ -12,13 +12,16 @@ public class WorkflowRequestsController : ControllerBase
 {
     private readonly IWorkflowRequestService _service;
     private readonly IWorkflowApprovalService _approvalService;
+    private readonly IWorkflowHistoryService _historyService;
 
     public WorkflowRequestsController(
         IWorkflowRequestService service,
-        IWorkflowApprovalService approvalService)
+        IWorkflowApprovalService approvalService,
+        IWorkflowHistoryService historyService)
     {
         _service = service;
         _approvalService = approvalService;
+        _historyService = historyService;
     }
 
     [HttpGet]
@@ -71,5 +74,13 @@ public class WorkflowRequestsController : ControllerBase
         await _approvalService.RejectAsync(id, dto.Reason);
 
         return NoContent();
+    }
+
+    [HttpGet("{id:int}/history")]
+    public async Task<IActionResult> GetHistory(int id)
+    {
+        var history = await _historyService.GetHistoryAsync(id);
+
+        return Ok(history);
     }
 }

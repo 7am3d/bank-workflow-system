@@ -14,19 +14,22 @@ public class WorkflowRequestService : IWorkflowRequestService
     private readonly IRequestTypeRepository _requestTypeRepository;
     private readonly ICurrentUserService _currentUser;
     private readonly IWorkflowApprovalService _workflowApprovalService;
+    private readonly IWorkflowHistoryService _workflowHistoryService;
 
     public WorkflowRequestService(
         IWorkflowRequestRepository workflowRepository,
         IUserRepository userRepository,
         IRequestTypeRepository requestTypeRepository,
         ICurrentUserService currentUser,
-        IWorkflowApprovalService workflowApprovalService)
+        IWorkflowApprovalService workflowApprovalService,
+        IWorkflowHistoryService workflowHistoryService)
     {
         _workflowRepository = workflowRepository;
         _userRepository = userRepository;
         _requestTypeRepository = requestTypeRepository;
         _currentUser = currentUser;
         _workflowApprovalService = workflowApprovalService;
+        _workflowHistoryService = workflowHistoryService;
     }
 
     public async Task<List<WorkflowRequestDto>> GetAllAsync()
@@ -92,6 +95,13 @@ public class WorkflowRequestService : IWorkflowRequestService
 
         await _workflowApprovalService.InitializeWorkflowAsync(request);
 
+        await _workflowHistoryService.LogAsync(
+                request.Id,
+                WorkflowAction.Created,
+                RequestStatus.Pending,
+                RequestStatus.Pending);
+
         return WorkflowRequestMapper.ToDto(request);
     }
+
 }

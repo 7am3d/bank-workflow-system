@@ -10,14 +10,17 @@ public class WorkflowApprovalService : IWorkflowApprovalService
     private readonly IWorkflowStepRepository _workflowStepRepository;
     private readonly IUserRepository _userRepository;
     private readonly ICurrentUserService _currentUser;
+    private readonly IWorkflowHistoryService _workflowHistoryService;
     public WorkflowApprovalService(
     IWorkflowStepRepository workflowStepRepository,
     IUserRepository userRepository,
-    ICurrentUserService currentUser)
+    ICurrentUserService currentUser,
+    IWorkflowHistoryService workflowHistoryService)
     {
         _workflowStepRepository = workflowStepRepository;
         _userRepository = userRepository;
         _currentUser = currentUser;
+        _workflowHistoryService = workflowHistoryService;
     }
 
     public async Task InitializeWorkflowAsync(WorkflowRequest workflowRequest)
@@ -88,7 +91,19 @@ public class WorkflowApprovalService : IWorkflowApprovalService
             request.Status = RequestStatus.Approved;
         }
 
+        var newStatus = nextStep != null
+            ? RequestStatus.Pending
+            : RequestStatus.Approved;
+
         await _workflowStepRepository.SaveChangesAsync();
+
+        await _workflowHistoryService.LogAsync(
+            workflowRequestId,
+            WorkflowAction.Approved,
+            RequestStatus.Pending,
+            newStatus);
+
+        
     }
 
     public async Task RejectAsync(int workflowRequestId, string reason)
@@ -113,5 +128,11 @@ public class WorkflowApprovalService : IWorkflowApprovalService
         request.Status = RequestStatus.Rejected;
 
         await _workflowStepRepository.SaveChangesAsync();
+
+        await _workflowHistoryService.LogAsync(
+            workflowRequestId,
+            WorkflowAction.Rejected,
+            RequestStatus.Pending,
+            RequestStatus.Rejected);
     }
 }

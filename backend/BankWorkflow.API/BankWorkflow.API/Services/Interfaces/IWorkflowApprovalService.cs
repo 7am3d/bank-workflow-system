@@ -8,5 +8,5 @@ public interface IWorkflowApprovalService
 
     Task ApproveAsync(int workflowRequestId);
 
-    Task RejectAsync(int workflowRequestId);
+    Task RejectAsync(int workflowRequestId, string reason);
 }

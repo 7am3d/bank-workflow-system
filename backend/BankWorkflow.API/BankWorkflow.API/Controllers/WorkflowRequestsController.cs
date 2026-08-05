@@ -62,4 +62,14 @@ public class WorkflowRequestsController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpPost("{id:int}/reject")]
+    public async Task<IActionResult> Reject(
+    int id,
+    [FromBody] RejectWorkflowRequestDto dto)
+    {
+        await _approvalService.RejectAsync(id, dto.Reason);
+
+        return NoContent();
+    }
 }

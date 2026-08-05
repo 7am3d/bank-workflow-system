@@ -91,8 +91,27 @@ public class WorkflowApprovalService : IWorkflowApprovalService
         await _workflowStepRepository.SaveChangesAsync();
     }
 
-    public Task RejectAsync(int workflowRequestId)
+    public async Task RejectAsync(int workflowRequestId, string reason)
     {
-        throw new NotImplementedException();
+        var currentStep = await _workflowStepRepository
+            .GetCurrentPendingStepAsync(workflowRequestId);
+
+        if (currentStep == null)
+            throw new InvalidOperationException("No pending workflow step found.");
+
+        if (currentStep.ApproverUserId != _currentUser.UserId)
+        {
+            throw new UnauthorizedAccessException(
+                "You are not assigned to reject this workflow.");
+        }
+
+        currentStep.Status = RequestStatus.Rejected;
+        currentStep.CompletedAt = DateTime.UtcNow;
+
+        var request = currentStep.WorkflowRequest;
+
+        request.Status = RequestStatus.Rejected;
+
+        await _workflowStepRepository.SaveChangesAsync();
     }
 }

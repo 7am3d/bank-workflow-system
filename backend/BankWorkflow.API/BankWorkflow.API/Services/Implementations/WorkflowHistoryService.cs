@@ -24,7 +24,8 @@ public class WorkflowHistoryService : IWorkflowHistoryService
         int workflowRequestId,
         WorkflowAction action,
         RequestStatus previousStatus,
-        RequestStatus newStatus)
+        RequestStatus newStatus,
+        string? details = null)
     {
         var history = new WorkflowHistory
         {
@@ -33,6 +34,7 @@ public class WorkflowHistoryService : IWorkflowHistoryService
             Action = action,
             PreviousStatus = previousStatus,
             NewStatus = newStatus,
+            Details = details,
             CreatedAt = DateTime.UtcNow
         };
 

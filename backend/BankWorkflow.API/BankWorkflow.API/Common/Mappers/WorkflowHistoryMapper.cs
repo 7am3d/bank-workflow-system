@@ -10,9 +10,10 @@ public static class WorkflowHistoryMapper
         return new WorkflowHistoryDto
         {
             Id = history.Id,
-            Action = history.Action,
-            PreviousStatus = history.PreviousStatus,
-            NewStatus = history.NewStatus,
+            Action = history.Action.ToString(),
+            PreviousStatus = history.PreviousStatus.ToString(),
+            NewStatus = history.NewStatus.ToString(),
+            Details = history.Details,
             CreatedAt = history.CreatedAt,
             PerformedBy = $"{history.User.FirstName} {history.User.LastName}"
         };

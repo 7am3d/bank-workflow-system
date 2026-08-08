@@ -1,9 +1,13 @@
-﻿namespace BankWorkflow.API.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace BankWorkflow.API.Models;
 
 public class WorkflowComment
 {
     public int Id { get; set; }
 
+    [Required]
+    [MaxLength(2000)]
     public string Comment { get; set; } = string.Empty;
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

@@ -9,7 +9,8 @@ public interface IWorkflowHistoryService
         int workflowRequestId,
         WorkflowAction action,
         RequestStatus previousStatus,
-        RequestStatus newStatus);
+        RequestStatus newStatus,
+        string? details = null);
 
     Task<List<WorkflowHistoryDto>> GetHistoryAsync(int workflowRequestId);
 }

@@ -32,7 +32,8 @@ public class WorkflowRequest
 
     public ICollection<WorkflowStep> WorkflowSteps { get; set; } = new List<WorkflowStep>();
 
-    public ICollection<WorkflowComment> Comments { get; set; } = new List<WorkflowComment>();
+    public ICollection<WorkflowComment> Comments { get; set; }
+    = new List<WorkflowComment>();
 
     public ICollection<WorkflowHistory> HistoryEntries { get; set; } = new List<WorkflowHistory>();
 }

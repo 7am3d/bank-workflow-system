@@ -12,6 +12,8 @@ public class WorkflowHistory
 
     public RequestStatus NewStatus { get; set; }
 
+    public string? Details { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     // Foreign Keys

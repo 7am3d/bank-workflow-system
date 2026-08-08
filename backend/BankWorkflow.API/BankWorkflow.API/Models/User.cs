@@ -30,7 +30,8 @@ public class User
 
     public ICollection<WorkflowRequest> CreatedRequests { get; set; } = new List<WorkflowRequest>();
 
-    public ICollection<WorkflowComment> Comments { get; set; } = new List<WorkflowComment>();
+    public ICollection<WorkflowComment> Comments { get; set; }
+    = new List<WorkflowComment>();
 
     public ICollection<WorkflowHistory> HistoryEntries { get; set; } = new List<WorkflowHistory>();
 

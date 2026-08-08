@@ -6,11 +6,13 @@ public class WorkflowHistoryDto
 {
     public int Id { get; set; }
 
-    public WorkflowAction Action { get; set; }
+    public string Action { get; set; } = string.Empty;
 
-    public RequestStatus PreviousStatus { get; set; }
+    public string PreviousStatus { get; set; } = string.Empty;
 
-    public RequestStatus NewStatus { get; set; }
+    public string NewStatus { get; set; } = string.Empty;
+
+    public string? Details { get; set; }
 
     public DateTime CreatedAt { get; set; }
 

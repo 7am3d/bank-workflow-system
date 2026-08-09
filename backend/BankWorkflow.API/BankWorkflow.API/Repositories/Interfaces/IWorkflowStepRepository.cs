@@ -18,5 +18,11 @@ public interface IWorkflowStepRepository
 
     Task<WorkflowStep?> GetByIdAsync(int id);
 
+    Task<int> CountPendingApprovalsAsync(int userId);
+
+    Task<List<WorkflowStep>> GetPendingApprovalsAsync(
+    int userId,
+    int count);
+
     Task SaveChangesAsync();
 }

@@ -44,6 +44,7 @@ builder.Services.AddScoped<IWorkflowRequestService, WorkflowRequestService>();
 builder.Services.AddScoped<IWorkflowApprovalService, WorkflowApprovalService>();
 builder.Services.AddScoped<IWorkflowHistoryService, WorkflowHistoryService>();
 builder.Services.AddScoped<IWorkflowCommentService, WorkflowCommentService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 // ==========================
 // JWT Authentication
 // ==========================

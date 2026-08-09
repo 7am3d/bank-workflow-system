@@ -71,6 +71,27 @@ public class WorkflowStepRepository : IWorkflowStepRepository
                 ws.Sequence == currentSequence + 1);
     }
 
+    public async Task<int> CountPendingApprovalsAsync(int userId)
+    {
+        return await _context.WorkflowSteps.CountAsync(step =>
+            step.ApproverUserId == userId &&
+            step.Status == RequestStatus.Pending);
+    }
+
+    public async Task<List<WorkflowStep>> GetPendingApprovalsAsync(
+    int userId,
+    int count)
+    {
+        return await _context.WorkflowSteps
+            .Include(s => s.WorkflowRequest)
+                .ThenInclude(r => r.CreatedByUser)
+            .Where(s =>
+                s.ApproverUserId == userId &&
+                s.Status == RequestStatus.Pending)
+            .OrderBy(s => s.WorkflowRequest.CreatedAt)
+            .Take(count)
+            .ToListAsync();
+    }
     public async Task SaveChangesAsync()
     {
         await _context.SaveChangesAsync();

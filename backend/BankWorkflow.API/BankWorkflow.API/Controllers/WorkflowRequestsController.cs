@@ -25,9 +25,10 @@ public class WorkflowRequestsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll(
+    [FromQuery] WorkflowRequestFilterDto filter)
     {
-        return Ok(await _service.GetAllAsync());
+        return Ok(await _service.GetAllAsync(filter));
     }
 
     [HttpGet("my")]

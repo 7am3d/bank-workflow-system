@@ -2,6 +2,7 @@
 using BankWorkflow.API.Data;
 using BankWorkflow.API.Models;
 using BankWorkflow.API.Repositories.Interfaces;
+using BankWorkflow.API.DTOs.WorkflowRequest;
 using Microsoft.EntityFrameworkCore;
 
 namespace BankWorkflow.API.Repositories.Implementations;
@@ -82,6 +83,48 @@ public class WorkflowRequestRepository : IWorkflowRequestRepository
             .Where(r => r.CreatedByUserId == userId)
             .OrderByDescending(r => r.CreatedAt)
             .Take(count)
+            .ToListAsync();
+    }
+
+    public async Task<List<WorkflowRequest>> GetFilteredAsync(
+    WorkflowRequestFilterDto filter)
+    {
+        var query = _context.WorkflowRequests
+            .Include(r => r.RequestType)
+            .Include(r => r.CreatedByUser)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(filter.Search))
+        {
+            query = query.Where(r =>
+                r.Title.Contains(filter.Search) ||
+                r.Description.Contains(filter.Search));
+        }
+
+        if (filter.Status.HasValue)
+        {
+            query = query.Where(r =>
+                r.Status == filter.Status.Value);
+        }
+
+        if (filter.Priority.HasValue)
+        {
+            query = query.Where(r =>
+                r.Priority == filter.Priority.Value);
+        }
+
+        if (filter.RequestTypeId.HasValue)
+        {
+            query = query.Where(r =>
+                r.RequestTypeId == filter.RequestTypeId.Value);
+        }
+
+        query = query
+            .OrderByDescending(r => r.CreatedAt);
+
+        return await query
+            .Skip((filter.Page - 1) * filter.PageSize)
+            .Take(filter.PageSize)
             .ToListAsync();
     }
 

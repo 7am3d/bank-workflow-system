@@ -32,15 +32,16 @@ public class WorkflowRequestService : IWorkflowRequestService
         _workflowHistoryService = workflowHistoryService;
     }
 
-    public async Task<List<WorkflowRequestDto>> GetAllAsync()
+    public async Task<List<WorkflowRequestDto>> GetAllAsync(
+    WorkflowRequestFilterDto filter)
     {
-        var requests = await _workflowRepository.GetAllAsync();
+        var requests = await _workflowRepository
+            .GetFilteredAsync(filter);
 
         return requests
             .Select(WorkflowRequestMapper.ToDto)
             .ToList();
     }
-
     public async Task<List<WorkflowRequestDto>> GetMyRequestsAsync()
     {
         var requests = await _workflowRepository.GetByUserIdAsync(_currentUser.UserId);

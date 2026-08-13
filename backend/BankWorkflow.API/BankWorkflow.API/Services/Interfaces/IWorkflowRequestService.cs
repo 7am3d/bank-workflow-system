@@ -4,7 +4,8 @@ namespace BankWorkflow.API.Services.Interfaces;
 
 public interface IWorkflowRequestService
 {
-    Task<List<WorkflowRequestDto>> GetAllAsync();
+    Task<List<WorkflowRequestDto>> GetAllAsync(
+        WorkflowRequestFilterDto filter);
 
     Task<List<WorkflowRequestDto>> GetMyRequestsAsync();
 

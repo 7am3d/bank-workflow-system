@@ -1,4 +1,5 @@
 ﻿using BankWorkflow.API.Common;
+using BankWorkflow.API.DTOs.WorkflowRequest;
 using BankWorkflow.API.Models;
 
 namespace BankWorkflow.API.Repositories.Interfaces;
@@ -26,6 +27,9 @@ public interface IWorkflowRequestRepository
     Task<List<WorkflowRequest>> GetRecentByCreatorAsync(
     int userId,
     int count);
+
+    Task<List<WorkflowRequest>> GetFilteredAsync(
+    WorkflowRequestFilterDto filter);
 
     Task SaveChangesAsync();
 }

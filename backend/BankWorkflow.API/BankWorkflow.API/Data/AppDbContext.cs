@@ -24,6 +24,8 @@ public class AppDbContext : DbContext
 
     public DbSet<WorkflowComment> WorkflowComments => Set<WorkflowComment>();
 
+    public DbSet<WorkflowAttachment> WorkflowAttachments => Set<WorkflowAttachment>();
+
     public DbSet<WorkflowHistory> WorkflowHistory => Set<WorkflowHistory>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -42,6 +44,18 @@ public class AppDbContext : DbContext
             .HasOne(c => c.User)
             .WithMany(u => u.Comments)
             .HasForeignKey(c => c.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<WorkflowAttachment>()
+            .HasOne(a => a.WorkflowRequest)
+            .WithMany(r => r.Attachments)
+            .HasForeignKey(a => a.WorkflowRequestId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<WorkflowAttachment>()
+            .HasOne(a => a.UploadedByUser)
+            .WithMany(u => u.UploadedAttachments)
+            .HasForeignKey(a => a.UploadedByUserId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

@@ -36,4 +36,6 @@ public class WorkflowRequest
     = new List<WorkflowComment>();
 
     public ICollection<WorkflowHistory> HistoryEntries { get; set; } = new List<WorkflowHistory>();
+
+    public ICollection<WorkflowAttachment> Attachments { get; set; } = new List<WorkflowAttachment>();
 }

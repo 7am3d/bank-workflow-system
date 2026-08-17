@@ -36,4 +36,6 @@ public class User
     public ICollection<WorkflowHistory> HistoryEntries { get; set; } = new List<WorkflowHistory>();
 
     public ICollection<WorkflowStep> AssignedWorkflowSteps { get; set; } = new List<WorkflowStep>();
+
+    public ICollection<WorkflowAttachment> UploadedAttachments { get; set; } = new List<WorkflowAttachment>();
 }

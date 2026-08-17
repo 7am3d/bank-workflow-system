@@ -33,6 +33,7 @@ builder.Services.AddScoped<IWorkflowRequestRepository, WorkflowRequestRepository
 builder.Services.AddScoped<IWorkflowStepRepository, WorkflowStepRepository>();
 builder.Services.AddScoped<IWorkflowHistoryRepository, WorkflowHistoryRepository>();
 builder.Services.AddScoped<IWorkflowCommentRepository, WorkflowCommentRepository>();
+builder.Services.AddScoped<IWorkflowAttachmentRepository, WorkflowAttachmentRepository>();
 
 // Services
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -45,6 +46,7 @@ builder.Services.AddScoped<IWorkflowApprovalService, WorkflowApprovalService>();
 builder.Services.AddScoped<IWorkflowHistoryService, WorkflowHistoryService>();
 builder.Services.AddScoped<IWorkflowCommentService, WorkflowCommentService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IWorkflowAttachmentService, WorkflowAttachmentService>();
 // ==========================
 // JWT Authentication
 // ==========================

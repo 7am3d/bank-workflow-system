@@ -11,16 +11,19 @@ public class WorkflowApprovalService : IWorkflowApprovalService
     private readonly IUserRepository _userRepository;
     private readonly ICurrentUserService _currentUser;
     private readonly IWorkflowHistoryService _workflowHistoryService;
+    private readonly INotificationService _notificationService;
     public WorkflowApprovalService(
     IWorkflowStepRepository workflowStepRepository,
     IUserRepository userRepository,
     ICurrentUserService currentUser,
-    IWorkflowHistoryService workflowHistoryService)
+    IWorkflowHistoryService workflowHistoryService,
+    INotificationService notificationService)
     {
         _workflowStepRepository = workflowStepRepository;
         _userRepository = userRepository;
         _currentUser = currentUser;
         _workflowHistoryService = workflowHistoryService;
+        _notificationService = notificationService;
     }
 
     public async Task InitializeWorkflowAsync(WorkflowRequest workflowRequest)
@@ -85,10 +88,27 @@ public class WorkflowApprovalService : IWorkflowApprovalService
         {
             request.CurrentStep++;
             request.Status = RequestStatus.Pending;
+
+            if (nextStep.ApproverUserId.HasValue)
+            {
+                await _notificationService.CreateAsync(
+                    nextStep.ApproverUserId.Value,
+                    "Approval Required",
+                    $"Workflow request '{request.Title}' requires your approval.",
+                    "ApprovalRequired",
+                    workflowRequestId);
+            }
         }
         else
         {
             request.Status = RequestStatus.Approved;
+
+            await _notificationService.CreateAsync(
+                request.CreatedByUserId,
+                "Request Approved",
+                $"Your workflow request '{request.Title}' has been fully approved.",
+                "Approved",
+                workflowRequestId);
         }
 
         var newStatus = nextStep != null
@@ -126,6 +146,13 @@ public class WorkflowApprovalService : IWorkflowApprovalService
         var request = currentStep.WorkflowRequest;
 
         request.Status = RequestStatus.Rejected;
+
+        await _notificationService.CreateAsync(
+            request.CreatedByUserId,
+            "Request Rejected",
+            $"Your workflow request '{request.Title}' has been rejected.",
+            "Rejected",
+            workflowRequestId);
 
         await _workflowStepRepository.SaveChangesAsync();
 

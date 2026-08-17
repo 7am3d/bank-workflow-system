@@ -28,6 +28,8 @@ public class AppDbContext : DbContext
 
     public DbSet<WorkflowHistory> WorkflowHistory => Set<WorkflowHistory>();
 
+    public DbSet<Notification> Notifications => Set<Notification>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -45,6 +47,18 @@ public class AppDbContext : DbContext
             .WithMany(u => u.Comments)
             .HasForeignKey(c => c.UserId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Notification>()
+            .HasOne(n => n.User)
+            .WithMany()
+            .HasForeignKey(n => n.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Notification>()
+            .HasOne(n => n.WorkflowRequest)
+            .WithMany()
+            .HasForeignKey(n => n.WorkflowRequestId)
+            .OnDelete(DeleteBehavior.SetNull);
 
         modelBuilder.Entity<WorkflowAttachment>()
             .HasOne(a => a.WorkflowRequest)

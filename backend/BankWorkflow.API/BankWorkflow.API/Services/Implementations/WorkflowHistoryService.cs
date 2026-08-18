@@ -23,7 +23,7 @@ public class WorkflowHistoryService : IWorkflowHistoryService
     public async Task LogAsync(
         int workflowRequestId,
         WorkflowAction action,
-        RequestStatus previousStatus,
+        RequestStatus? previousStatus,
         RequestStatus newStatus,
         string? details = null)
     {

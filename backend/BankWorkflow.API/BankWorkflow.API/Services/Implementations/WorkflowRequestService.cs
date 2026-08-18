@@ -97,10 +97,10 @@ public class WorkflowRequestService : IWorkflowRequestService
         await _workflowApprovalService.InitializeWorkflowAsync(request);
 
         await _workflowHistoryService.LogAsync(
-                request.Id,
-                WorkflowAction.Created,
-                RequestStatus.Pending,
-                RequestStatus.Pending);
+            request.Id,
+            WorkflowAction.Created,
+            null,
+            RequestStatus.Pending);
 
         return WorkflowRequestMapper.ToDto(request);
     }

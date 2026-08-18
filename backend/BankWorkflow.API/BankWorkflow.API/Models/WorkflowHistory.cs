@@ -8,7 +8,7 @@ public class WorkflowHistory
 
     public WorkflowAction Action { get; set; }
 
-    public RequestStatus PreviousStatus { get; set; }
+    public RequestStatus? PreviousStatus { get; set; }
 
     public RequestStatus NewStatus { get; set; }
 

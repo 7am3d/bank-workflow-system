@@ -49,6 +49,23 @@ builder.Services.AddScoped<IWorkflowCommentService, WorkflowCommentService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IWorkflowAttachmentService, WorkflowAttachmentService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+
+// ==========================
+// CORS
+// ==========================
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
+
 // ==========================
 // JWT Authentication
 // ==========================
@@ -153,6 +170,8 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
+
+app.UseCors("Frontend");
 
 app.UseAuthentication();
 app.UseAuthorization();

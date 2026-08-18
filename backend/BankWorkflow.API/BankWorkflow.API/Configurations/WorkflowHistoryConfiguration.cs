@@ -15,8 +15,7 @@ public class WorkflowHistoryConfiguration : IEntityTypeConfiguration<WorkflowHis
         builder.Property(h => h.Action)
             .IsRequired();
 
-        builder.Property(h => h.PreviousStatus)
-            .IsRequired();
+        builder.Property(h => h.PreviousStatus);
 
         builder.Property(h => h.NewStatus)
             .IsRequired();

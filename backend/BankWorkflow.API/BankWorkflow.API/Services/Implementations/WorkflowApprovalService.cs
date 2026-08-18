@@ -1,4 +1,5 @@
 ﻿using BankWorkflow.API.Common;
+using BankWorkflow.API.DTOs.Dashboard;
 using BankWorkflow.API.Models;
 using BankWorkflow.API.Repositories.Interfaces;
 using BankWorkflow.API.Services.Interfaces;
@@ -161,5 +162,24 @@ public class WorkflowApprovalService : IWorkflowApprovalService
             WorkflowAction.Rejected,
             RequestStatus.Pending,
             RequestStatus.Rejected);
+    }
+
+    public async Task<List<PendingApprovalDto>> GetPendingApprovalsAsync()
+    {
+        var pendingApprovals =
+            await _workflowStepRepository.GetAllPendingApprovalsAsync(
+                _currentUser.UserId);
+
+        return pendingApprovals
+            .Select(s => new PendingApprovalDto
+            {
+                Id = s.WorkflowRequest.Id,
+                Title = s.WorkflowRequest.Title,
+                RequestedBy =
+                    $"{s.WorkflowRequest.CreatedByUser.FirstName} {s.WorkflowRequest.CreatedByUser.LastName}",
+                Priority = s.WorkflowRequest.Priority.ToString(),
+                CreatedAt = s.WorkflowRequest.CreatedAt
+            })
+            .ToList();
     }
 }

@@ -88,8 +88,20 @@ public class WorkflowStepRepository : IWorkflowStepRepository
             .Where(s =>
                 s.ApproverUserId == userId &&
                 s.Status == RequestStatus.Pending)
-            .OrderBy(s => s.WorkflowRequest.CreatedAt)
+            .OrderByDescending(s => s.WorkflowRequest.CreatedAt)
             .Take(count)
+            .ToListAsync();
+    }
+
+    public async Task<List<WorkflowStep>> GetAllPendingApprovalsAsync(int userId)
+    {
+        return await _context.WorkflowSteps
+            .Include(s => s.WorkflowRequest)
+                .ThenInclude(r => r.CreatedByUser)
+            .Where(s =>
+                s.ApproverUserId == userId &&
+                s.Status == RequestStatus.Pending)
+            .OrderByDescending(s => s.WorkflowRequest.CreatedAt)
             .ToListAsync();
     }
     public async Task SaveChangesAsync()

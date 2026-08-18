@@ -84,4 +84,12 @@ public class WorkflowRequestsController : ControllerBase
 
         return Ok(history);
     }
+
+    [HttpGet("pending-approvals")]
+    public async Task<IActionResult> GetPendingApprovals()
+    {
+        var requests = await _approvalService.GetPendingApprovalsAsync();
+
+        return Ok(requests);
+    }
 }

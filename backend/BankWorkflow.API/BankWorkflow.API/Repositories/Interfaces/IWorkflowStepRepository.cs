@@ -24,5 +24,7 @@ public interface IWorkflowStepRepository
     int userId,
     int count);
 
+    Task<List<WorkflowStep>> GetAllPendingApprovalsAsync(int userId);
+
     Task SaveChangesAsync();
 }

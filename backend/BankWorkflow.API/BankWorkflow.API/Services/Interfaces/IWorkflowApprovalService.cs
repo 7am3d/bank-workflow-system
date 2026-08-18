@@ -1,4 +1,5 @@
-﻿using BankWorkflow.API.Models;
+﻿using BankWorkflow.API.DTOs.Dashboard;
+using BankWorkflow.API.Models;
 
 namespace BankWorkflow.API.Services.Interfaces;
 
@@ -9,4 +10,6 @@ public interface IWorkflowApprovalService
     Task ApproveAsync(int workflowRequestId);
 
     Task RejectAsync(int workflowRequestId, string reason);
+
+    Task<List<PendingApprovalDto>> GetPendingApprovalsAsync();
 }

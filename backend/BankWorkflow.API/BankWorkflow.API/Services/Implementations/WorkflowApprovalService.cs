@@ -51,7 +51,7 @@ public class WorkflowApprovalService : IWorkflowApprovalService
         var workflowSteps = new List<WorkflowStep>();
 
         foreach (var stepDefinition in workflowDefinition.Steps
-    .OrderBy(s => s.Sequence))
+            .OrderBy(s => s.Sequence))
         {
             if (stepDefinition.ApproverType == WorkflowApproverType.Role)
             {
@@ -97,11 +97,7 @@ public class WorkflowApprovalService : IWorkflowApprovalService
                 {
                     WorkflowRequestId = workflowRequest.Id,
                     Sequence = stepDefinition.Sequence,
-
-                    // The selected checker is an Employee,
-                    // so we can store their role here.
                     RoleId = checker.RoleId,
-
                     ApproverUserId = checker.Id,
                     Status = RequestStatus.Pending
                 });
@@ -115,6 +111,21 @@ public class WorkflowApprovalService : IWorkflowApprovalService
 
         await _workflowStepRepository.AddRangeAsync(workflowSteps);
         await _workflowStepRepository.SaveChangesAsync();
+
+        // Notify the first assigned approver.
+        var firstStep = workflowSteps
+            .OrderBy(step => step.Sequence)
+            .First();
+
+        if (firstStep.ApproverUserId.HasValue)
+        {
+            await _notificationService.CreateAsync(
+                firstStep.ApproverUserId.Value,
+                "Approval Required",
+                $"Workflow request '{workflowRequest.Title}' requires your approval.",
+                "ApprovalRequired",
+                workflowRequest.Id);
+        }
     }
 
     public async Task ApproveAsync(int workflowRequestId)

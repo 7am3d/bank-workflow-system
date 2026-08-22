@@ -36,7 +36,7 @@ public class WorkflowRequestService : IWorkflowRequestService
     }
 
     public async Task<List<WorkflowRequestDto>> GetAllAsync(
-    WorkflowRequestFilterDto filter)
+        WorkflowRequestFilterDto filter)
     {
         var requests = await _workflowRepository
             .GetFilteredAsync(filter);
@@ -45,9 +45,11 @@ public class WorkflowRequestService : IWorkflowRequestService
             .Select(WorkflowRequestMapper.ToDto)
             .ToList();
     }
+
     public async Task<List<WorkflowRequestDto>> GetMyRequestsAsync()
     {
-        var requests = await _workflowRepository.GetByUserIdAsync(_currentUser.UserId);
+        var requests = await _workflowRepository
+            .GetByUserIdAsync(_currentUser.UserId);
 
         return requests
             .Select(WorkflowRequestMapper.ToDto)
@@ -63,10 +65,26 @@ public class WorkflowRequestService : IWorkflowRequestService
 
         var dto = WorkflowRequestMapper.ToDto(request);
 
+        var workflowSteps =
+            await _workflowStepRepository.GetByRequestIdAsync(id);
+
+        dto.WorkflowSteps = workflowSteps
+            .Select(step => new WorkflowStepDto
+            {
+                Sequence = step.Sequence,
+                Status = step.Status.ToString(),
+                ApproverRole = step.Role?.Name ?? "Employee",
+                ApproverName = step.ApproverUser is null
+                    ? null
+                    : $"{step.ApproverUser.FirstName} {step.ApproverUser.LastName}"
+            })
+            .ToList();
+
         if (request.Status == RequestStatus.Pending)
         {
             var currentStep =
-                await _workflowStepRepository.GetCurrentPendingStepAsync(id);
+                await _workflowStepRepository
+                    .GetCurrentPendingStepAsync(id);
 
             dto.CanCurrentUserAct =
                 request.CreatedByUserId != _currentUser.UserId &&
@@ -76,17 +94,22 @@ public class WorkflowRequestService : IWorkflowRequestService
         return dto;
     }
 
-    public async Task<WorkflowRequestDto> CreateAsync(CreateWorkflowRequestDto dto)
+    public async Task<WorkflowRequestDto> CreateAsync(
+        CreateWorkflowRequestDto dto)
     {
-        var requestType = await _requestTypeRepository.GetByIdAsync(dto.RequestTypeId);
+        var requestType =
+            await _requestTypeRepository.GetByIdAsync(dto.RequestTypeId);
 
         if (requestType is null)
-            throw new InvalidOperationException("Request type not found.");
+            throw new InvalidOperationException(
+                "Request type not found.");
 
-        var createdBy = await _userRepository.GetByIdAsync(_currentUser.UserId);
+        var createdBy =
+            await _userRepository.GetByIdAsync(_currentUser.UserId);
 
         if (createdBy is null)
-            throw new InvalidOperationException("User not found.");
+            throw new InvalidOperationException(
+                "User not found.");
 
         var request = new WorkflowRequest
         {
@@ -119,5 +142,4 @@ public class WorkflowRequestService : IWorkflowRequestService
 
         return WorkflowRequestMapper.ToDto(request);
     }
-
 }

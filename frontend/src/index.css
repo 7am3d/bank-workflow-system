@@ -15,6 +15,10 @@ body {
     color: #1f2937;
 }
 
+/* =========================
+   APP LAYOUT
+   ========================= */
+
 .app-layout {
     display: flex;
     min-height: 100vh;
@@ -38,22 +42,28 @@ body {
     .sidebar-logo h2 {
         margin: 0;
         font-size: 20px;
+        font-weight: 700;
+        letter-spacing: -0.2px;
     }
 
 .sidebar-nav {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
     margin-top: 24px;
 }
 
 .nav-link {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     padding: 12px 14px;
     border-radius: 8px;
     color: #d1d5db;
     text-decoration: none;
-    transition: background 0.2s, color 0.2s;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
 }
 
     .nav-link:hover {
@@ -72,10 +82,20 @@ body {
     padding-top: 16px;
 }
 
+.sidebar .nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
 .main-area {
     flex: 1;
     min-width: 0;
 }
+
+/* =========================
+   HEADER
+   ========================= */
 
 .header {
     height: 72px;
@@ -85,19 +105,84 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 0 32px;
+    position: relative;
+    z-index: 10;
 }
 
     .header h1 {
         margin: 0;
         font-size: 20px;
+        font-weight: 700;
+        color: #172033;
+        letter-spacing: -0.2px;
     }
 
 .header-user {
     display: flex;
     align-items: center;
     gap: 12px;
-    color: #374151;
+    color: #475569;
+    font-size: 14px;
 }
+
+/* =========================
+   NOTIFICATION BELL
+   ========================= */
+
+.notification-bell {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+    font-size: 20px;
+    line-height: 1;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+    .notification-bell:hover {
+        background: #f1f5f9;
+        transform: translateY(-1px);
+    }
+
+    .notification-bell:active {
+        transform: translateY(0);
+    }
+
+    .notification-bell:focus-visible {
+        outline: 3px solid rgba(37, 99, 235, 0.25);
+        outline-offset: 2px;
+    }
+
+/* Red number displayed on the bell */
+
+.notification-badge {
+    position: absolute;
+    top: 1px;
+    right: 0;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background-color: #dc2626;
+    color: white;
+    border: 2px solid white;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* =========================
+   PAGE CONTENT
+   ========================= */
 
 .page-content {
     padding: 32px;
@@ -119,12 +204,20 @@ body {
     .page-header h1 {
         margin: 0 0 8px;
         font-size: 32px;
+        font-weight: 700;
+        color: #172033;
+        letter-spacing: -0.5px;
     }
 
     .page-header p {
         margin: 0;
         color: #64748b;
+        font-size: 14px;
     }
+
+/* =========================
+   DASHBOARD STATS
+   ========================= */
 
 .stats-grid {
     display: grid;
@@ -142,7 +235,13 @@ body {
     flex-direction: column;
     gap: 12px;
     box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+    }
 
 .stat-label {
     color: #64748b;
@@ -156,22 +255,33 @@ body {
     color: #0f172a;
 }
 
+/* =========================
+   SECTIONS
+   ========================= */
+
 .dashboard-section {
     background: white;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
     margin-bottom: 30px;
     overflow: hidden;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
 }
 
 .section-header {
     padding: 22px 24px;
     border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
 }
 
     .section-header h2 {
         margin: 0 0 5px;
         font-size: 20px;
+        font-weight: 650;
+        color: #172033;
     }
 
     .section-header p {
@@ -179,6 +289,10 @@ body {
         color: #64748b;
         font-size: 14px;
     }
+
+/* =========================
+   TABLES
+   ========================= */
 
 .table-container {
     overflow-x: auto;
@@ -212,13 +326,22 @@ body {
         border-bottom: none;
     }
 
-    .requests-table tbody tr:hover {
-        background: #f8fafc;
+    .requests-table tbody tr {
+        transition: background-color 0.15s ease;
     }
+
+        .requests-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+/* =========================
+   STATUS / PRIORITY
+   ========================= */
 
 .status-badge,
 .priority-badge {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
     padding: 5px 10px;
     border-radius: 999px;
     font-size: 12px;
@@ -255,22 +378,20 @@ body {
     color: #991b1b;
 }
 
+/* =========================
+   EMPTY STATES
+   ========================= */
+
 .empty-state {
-    padding: 30px 24px;
+    padding: 48px 24px;
     color: #64748b;
+    text-align: center;
+    font-size: 14px;
 }
 
-@media (max-width: 900px) {
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 600px) {
-    .stats-grid {
-        grid-template-columns: 1fr;
-    }
-}
+/* =========================
+   BUTTONS
+   ========================= */
 
 .view-all-button {
     background: none;
@@ -284,3 +405,362 @@ body {
     .view-all-button:hover {
         text-decoration: underline;
     }
+
+button {
+    font-family: inherit;
+}
+
+/* =========================
+   NOTIFICATIONS PAGE
+   ========================= */
+
+.notification-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.notification-item {
+    position: relative;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e5e7eb;
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+    .notification-item:last-child {
+        border-bottom: none;
+    }
+
+    /* Read notification */
+
+    .notification-item.read {
+        background: white;
+    }
+
+        .notification-item.read:hover {
+            background: #f8fafc;
+        }
+
+    /* Unread notification */
+
+    .notification-item.unread {
+        background: #eff6ff;
+    }
+
+        .notification-item.unread:hover {
+            background: #e6f0ff;
+        }
+
+        /* Small left indicator for unread notifications */
+
+        .notification-item.unread::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: #2563eb;
+        }
+
+/* Content */
+
+.notification-content {
+    width: 100%;
+}
+
+.notification-header {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 6px;
+}
+
+    .notification-header h3 {
+        margin: 0;
+        color: #172033;
+        font-size: 16px;
+        font-weight: 650;
+    }
+
+.notification-content p {
+    margin: 0 0 8px;
+    color: #334155;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.notification-content small {
+    color: #64748b;
+    font-size: 12px;
+}
+
+/* Small blue dot for unread notifications */
+
+.unread-dot {
+    width: 7px;
+    height: 7px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background-color: #2563eb;
+}
+
+/* =========================
+   NOTIFICATION COUNT
+   ========================= */
+
+/*
+   This matches the React class:
+   notification-count
+*/
+
+.notification-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 10px;
+    min-height: 24px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 11px;
+    font-weight: 600;
+    vertical-align: middle;
+}
+
+/* Backwards compatibility if this class
+   is still used somewhere */
+
+.notification-unread-count {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 10px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* =========================
+   NOTIFICATION ACTIONS
+   ========================= */
+
+.notification-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.mark-read-button {
+    padding: 8px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+    background: white;
+    color: #2563eb;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+    .mark-read-button:hover:not(:disabled) {
+        background: #eff6ff;
+        border-color: #93c5fd;
+        box-shadow: 0 2px 5px rgba(37, 99, 235, 0.08);
+        transform: translateY(-1px);
+    }
+
+    .mark-read-button:active:not(:disabled) {
+        transform: translateY(0);
+    }
+
+    .mark-read-button:focus-visible {
+        outline: 3px solid rgba(37, 99, 235, 0.2);
+        outline-offset: 2px;
+    }
+
+    .mark-read-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+/* =========================
+   SIDEBAR NOTIFICATION BADGE
+   ========================= */
+
+.sidebar-notification-badge {
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    margin-left: auto;
+    border-radius: 999px;
+    background: #dc2626;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+/* =========================
+   LOGIN / FORM ELEMENTS
+   ========================= */
+
+input,
+select,
+textarea {
+    font-family: inherit;
+}
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+        outline: none;
+    }
+
+    button:focus-visible,
+    a:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible {
+        outline: 3px solid rgba(37, 99, 235, 0.2);
+        outline-offset: 2px;
+    }
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media (max-width: 1100px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .sidebar {
+        width: 210px;
+    }
+
+    .header {
+        padding: 0 24px;
+    }
+
+    .page-content {
+        padding: 24px;
+    }
+}
+
+@media (max-width: 700px) {
+    .app-layout {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        min-height: auto;
+        padding: 16px;
+    }
+
+    .sidebar-logo {
+        padding: 0 8px 16px;
+    }
+
+    .sidebar-nav {
+        flex-direction: row;
+        margin-top: 16px;
+        overflow-x: auto;
+    }
+
+        .sidebar-nav .nav-link {
+            white-space: nowrap;
+        }
+
+    .sidebar-bottom {
+        display: none;
+    }
+
+    .header {
+        height: 64px;
+        padding: 0 16px;
+    }
+
+    .header-user span {
+        font-size: 13px;
+    }
+
+    .page-content {
+        padding: 20px 16px;
+    }
+
+    .page-header {
+        margin-bottom: 24px;
+    }
+
+        .page-header h1 {
+            font-size: 28px;
+        }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .section-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .notification-actions {
+        width: 100%;
+    }
+
+    .mark-read-button {
+        width: 100%;
+    }
+
+    .notification-item {
+        padding: 18px 18px 18px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header h1 {
+        font-size: 18px;
+    }
+
+    .header-user {
+        gap: 8px;
+    }
+
+    .notification-bell {
+        width: 36px;
+        height: 36px;
+    }
+
+    .dashboard-section {
+        border-radius: 10px;
+    }
+
+    .section-header {
+        padding: 18px;
+    }
+
+    .notification-item {
+        padding: 16px 16px 16px 18px;
+    }
+
+    .notification-header h3 {
+        font-size: 15px;
+    }
+
+    .notification-content p {
+        font-size: 13px;
+    }
+}

@@ -28,14 +28,22 @@ public class JwtTokenService : IJwtTokenService
 
         var expirationHours = int.Parse(
             _configuration["Jwt:ExpirationHours"]
-            ?? throw new InvalidOperationException("JWT ExpirationHours is not configured."));
+            ?? throw new InvalidOperationException(
+                "JWT ExpirationHours is not configured."));
 
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Email, user.Email),
+
+            // User information
+            new("firstName", user.FirstName),
+            new("lastName", user.LastName),
             new(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
+
+            // Role
             new(ClaimTypes.Role, user.Role.Name),
+
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 

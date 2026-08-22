@@ -23,4 +23,6 @@ public class WorkflowRequestDto
     public DateTime CreatedAt { get; set; }
 
     public bool CanCurrentUserAct { get; set; }
+
+    public List<WorkflowStepDto> WorkflowSteps { get; set; } = new();
 }

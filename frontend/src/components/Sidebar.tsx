@@ -1,6 +1,9 @@
 ﻿import { NavLink } from "react-router-dom";
+import { useNotifications } from "../context/NotificationContext";
 
 function Sidebar() {
+    const { unreadCount } = useNotifications();
+
     return (
         <aside className="sidebar">
             <div className="sidebar-logo">
@@ -32,7 +35,13 @@ function Sidebar() {
                         isActive ? "nav-link active" : "nav-link"
                     }
                 >
-                    Notifications
+                    <span>Notifications</span>
+
+                    {unreadCount > 0 && (
+                        <span className="sidebar-notification-badge">
+                            {unreadCount}
+                        </span>
+                    )}
                 </NavLink>
             </nav>
 

@@ -30,6 +30,10 @@ public static class SeedData
         new() { Name = "Purchase Request" },
         new() { Name = "Expense Claim" },
         new() { Name = "Hardware Request" },
-        new() { Name = "Software Request" }
+        new() { Name = "Software Request" },
+
+        // Banking Operations
+        new() { Name = "KYC Verification" },
+        new() { Name = "Account Opening" }
     ];
 }

@@ -22,5 +22,11 @@ public interface IUserRepository
 
     Task SaveChangesAsync();
 
-    Task<User?> GetFirstByRoleAsync(int roleId);
+    Task<User?> GetFirstByRoleAsync(
+    int roleId,
+    int? excludeUserId = null);
+
+    Task<User?> GetFirstEmployeeCheckerAsync(int excludedUserId);
+
+    Task<Role?> GetRoleByNameAsync(string name);
 }

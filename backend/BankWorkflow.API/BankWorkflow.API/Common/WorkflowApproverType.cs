@@ -2,6 +2,6 @@
 
 public enum WorkflowApproverType
 {
-    IndependentEmployee = 1,
-    Role = 2
+    Role = 1,
+    Employee = 2
 }

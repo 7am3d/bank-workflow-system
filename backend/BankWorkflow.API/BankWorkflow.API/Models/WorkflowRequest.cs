@@ -38,4 +38,8 @@ public class WorkflowRequest
     public ICollection<WorkflowHistory> HistoryEntries { get; set; } = new List<WorkflowHistory>();
 
     public ICollection<WorkflowAttachment> Attachments { get; set; } = new List<WorkflowAttachment>();
+
+    public KycApplication? KycApplication { get; set; }
+
+    public AccountOpeningApplication? AccountOpeningApplication { get; set; }
 }

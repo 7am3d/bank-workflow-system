@@ -71,9 +71,34 @@ public class UserRepository : IUserRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<User?> GetFirstByRoleAsync(int roleId)
+    public async Task<User?> GetFirstByRoleAsync(
+    int roleId,
+    int? excludeUserId = null)
     {
         return await _context.Users
-            .FirstOrDefaultAsync(u => u.RoleId == roleId && u.IsActive);
+            .Where(u =>
+                u.RoleId == roleId &&
+                u.IsActive &&
+                (!excludeUserId.HasValue || u.Id != excludeUserId.Value))
+            .OrderBy(u => u.Id)
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<User?> GetFirstEmployeeCheckerAsync(int excludedUserId)
+    {
+        return await _context.Users
+            .Include(u => u.Role)
+            .Where(u =>
+                u.IsActive &&
+                u.Role.Name == "Employee" &&
+                u.Id != excludedUserId)
+            .OrderBy(u => u.Id)
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<Role?> GetRoleByNameAsync(string name)
+    {
+        return await _context.Roles
+            .FirstOrDefaultAsync(r => r.Name == name);
     }
 }

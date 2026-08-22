@@ -18,8 +18,16 @@ public static class DbInitializer
             await context.Roles.AddRangeAsync(SeedData.Roles);
 
         // Seed Request Types
-        if (!await context.RequestTypes.AnyAsync())
-            await context.RequestTypes.AddRangeAsync(SeedData.RequestTypes);
+        foreach (var seedRequestType in SeedData.RequestTypes)
+        {
+            var exists = await context.RequestTypes
+                .AnyAsync(r => r.Name == seedRequestType.Name);
+
+            if (!exists)
+            {
+                await context.RequestTypes.AddAsync(seedRequestType);
+            }
+        }
 
         await context.SaveChangesAsync();
 
@@ -50,13 +58,59 @@ public static class DbInitializer
 
         // Seed dynamic workflow definitions
         await SeedWorkflowDefinitionsAsync(context);
+
+        // Seed test Employee users
+        await SeedEmployeeUsersAsync(context);
+    }
+
+    private static async Task SeedEmployeeUsersAsync(AppDbContext context)
+    {
+        var employeeRole = await context.Roles
+            .FirstAsync(r => r.Name == "Employee");
+
+        var operationsDepartment = await context.Departments
+            .FirstAsync(d => d.Code == "OPS");
+
+        if (!await context.Users.AnyAsync(u => u.Email == "sarah@bankworkflow.com"))
+        {
+            var sarah = new User
+            {
+                FirstName = "Sarah",
+                LastName = "Employee",
+                Email = "sarah@bankworkflow.com",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("Employee@123"),
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow,
+                RoleId = employeeRole.Id,
+                DepartmentId = operationsDepartment.Id
+            };
+
+            await context.Users.AddAsync(sarah);
+        }
+
+        if (!await context.Users.AnyAsync(u => u.Email == "michael@bankworkflow.com"))
+        {
+            var michael = new User
+            {
+                FirstName = "Michael",
+                LastName = "Employee",
+                Email = "michael@bankworkflow.com",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("Employee@123"),
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow,
+                RoleId = employeeRole.Id,
+                DepartmentId = operationsDepartment.Id
+            };
+
+            await context.Users.AddAsync(michael);
+        }
+
+        await context.SaveChangesAsync();
     }
 
     private static async Task SeedWorkflowDefinitionsAsync(AppDbContext context)
     {
         // Don't create them again if they already exist.
-        if (await context.WorkflowDefinitions.AnyAsync())
-            return;
 
         var supervisorRole = await context.Roles
             .FirstAsync(r => r.Name == "Supervisor");
@@ -84,6 +138,12 @@ public static class DbInitializer
 
         var softwareRequest = await context.RequestTypes
             .FirstAsync(r => r.Name == "Software Request");
+
+        var kycVerification = await context.RequestTypes
+            .FirstAsync(r => r.Name == "KYC Verification");
+
+        var accountOpening = await context.RequestTypes
+            .FirstAsync(r => r.Name == "Account Opening");
 
         var workflows = new List<WorkflowDefinition>
         {
@@ -244,7 +304,116 @@ public static class DbInitializer
             }
         };
 
-        await context.WorkflowDefinitions.AddRangeAsync(workflows);
+        await AddWorkflowIfMissingAsync(
+            context,
+            workflows[0]);
+
+        await AddWorkflowIfMissingAsync(
+            context,
+            workflows[1]);
+
+        await AddWorkflowIfMissingAsync(
+            context,
+            workflows[2]);
+
+        await AddWorkflowIfMissingAsync(
+            context,
+            workflows[3]);
+
+        await AddWorkflowIfMissingAsync(
+            context,
+            workflows[4]);
+
+        await AddWorkflowIfMissingAsync(
+            context,
+            workflows[5]);
+
+        var kycWorkflow = await context.WorkflowDefinitions
+    .Include(w => w.Steps)
+    .FirstOrDefaultAsync(w => w.RequestTypeId == kycVerification.Id);
+
+        if (kycWorkflow is null)
+        {
+            kycWorkflow = new WorkflowDefinition
+            {
+                Name = "KYC Verification Workflow",
+                Description = "KYC verification requires an independent employee checker.",
+                RequestTypeId = kycVerification.Id,
+                IsActive = true,
+                Steps =
+        {
+            new WorkflowStepDefinition
+            {
+                Sequence = 1,
+                ApproverType = Common.WorkflowApproverType.Employee,
+                IsRequired = true
+            }
+        }
+            };
+
+            await context.WorkflowDefinitions.AddAsync(kycWorkflow);
+        }
+        else
+        {
+            var step = kycWorkflow.Steps
+                .FirstOrDefault(s => s.Sequence == 1);
+
+            if (step is not null)
+            {
+                step.ApproverType = Common.WorkflowApproverType.Employee;
+                step.RoleId = null;
+            }
+        }
+
+        var accountOpeningWorkflow = await context.WorkflowDefinitions
+    .Include(w => w.Steps)
+    .FirstOrDefaultAsync(w => w.RequestTypeId == accountOpening.Id);
+
+        if (accountOpeningWorkflow is null)
+        {
+            accountOpeningWorkflow = new WorkflowDefinition
+            {
+                Name = "Account Opening Workflow",
+                Description = "Account opening requires an independent employee checker.",
+                RequestTypeId = accountOpening.Id,
+                IsActive = true,
+                Steps =
+        {
+            new WorkflowStepDefinition
+            {
+                Sequence = 1,
+                ApproverType = Common.WorkflowApproverType.Employee,
+                IsRequired = true
+            }
+        }
+            };
+
+            await context.WorkflowDefinitions.AddAsync(accountOpeningWorkflow);
+        }
+        else
+        {
+            var step = accountOpeningWorkflow.Steps
+                .FirstOrDefault(s => s.Sequence == 1);
+
+            if (step is not null)
+            {
+                step.ApproverType = Common.WorkflowApproverType.Employee;
+                step.RoleId = null;
+            }
+        }
+
         await context.SaveChangesAsync();
+    }
+    private static async Task AddWorkflowIfMissingAsync(
+    AppDbContext context,
+    WorkflowDefinition workflow)
+    {
+        var exists = await context.WorkflowDefinitions
+            .AnyAsync(w => w.RequestTypeId == workflow.RequestTypeId);
+
+        if (!exists)
+        {
+            await context.WorkflowDefinitions.AddAsync(workflow);
+        }
     }
 }

@@ -50,11 +50,9 @@ public class WorkflowStepRepository : IWorkflowStepRepository
         return await _context.WorkflowSteps
             .Include(ws => ws.WorkflowRequest)
             .Include(ws => ws.Role)
-            .Include(ws => ws.ApproverUser)
             .FirstOrDefaultAsync(ws =>
                 ws.WorkflowRequestId == workflowRequestId &&
-                ws.Status == RequestStatus.Pending &&
-                ws.Sequence == ws.WorkflowRequest.CurrentStep);
+                ws.Status == RequestStatus.Pending);
     }
 
     public async Task<WorkflowStep?> GetByIdAsync(int id)

@@ -51,7 +51,7 @@ public class WorkflowApprovalService : IWorkflowApprovalService
         var workflowSteps = new List<WorkflowStep>();
 
         foreach (var stepDefinition in workflowDefinition.Steps
-            .OrderBy(s => s.Sequence))
+    .OrderBy(s => s.Sequence))
         {
             if (stepDefinition.ApproverType == WorkflowApproverType.Role)
             {
@@ -62,7 +62,9 @@ public class WorkflowApprovalService : IWorkflowApprovalService
                 }
 
                 var approver = await _userRepository
-                    .GetFirstByRoleAsync(stepDefinition.RoleId.Value);
+                    .GetFirstByRoleAsync(
+                        stepDefinition.RoleId.Value,
+                        workflowRequest.CreatedByUserId);
 
                 if (approver is null)
                 {
@@ -76,6 +78,31 @@ public class WorkflowApprovalService : IWorkflowApprovalService
                     Sequence = stepDefinition.Sequence,
                     RoleId = stepDefinition.RoleId.Value,
                     ApproverUserId = approver.Id,
+                    Status = RequestStatus.Pending
+                });
+            }
+            else if (stepDefinition.ApproverType == WorkflowApproverType.Employee)
+            {
+                var checker = await _userRepository
+                    .GetFirstEmployeeCheckerAsync(
+                        workflowRequest.CreatedByUserId);
+
+                if (checker is null)
+                {
+                    throw new InvalidOperationException(
+                        "No active employee checker is available.");
+                }
+
+                workflowSteps.Add(new WorkflowStep
+                {
+                    WorkflowRequestId = workflowRequest.Id,
+                    Sequence = stepDefinition.Sequence,
+
+                    // The selected checker is an Employee,
+                    // so we can store their role here.
+                    RoleId = checker.RoleId,
+
+                    ApproverUserId = checker.Id,
                     Status = RequestStatus.Pending
                 });
             }

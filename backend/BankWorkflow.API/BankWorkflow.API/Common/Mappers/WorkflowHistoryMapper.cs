@@ -11,11 +11,12 @@ public static class WorkflowHistoryMapper
         {
             Id = history.Id,
             Action = history.Action.ToString(),
-            PreviousStatus = history.PreviousStatus.ToString(),
+            PreviousStatus = history.PreviousStatus?.ToString(),
             NewStatus = history.NewStatus.ToString(),
             Details = history.Details,
             CreatedAt = history.CreatedAt,
-            PerformedBy = $"{history.User.FirstName} {history.User.LastName}"
+            PerformedBy =
+                $"{history.User.FirstName} {history.User.LastName}"
         };
     }
 }

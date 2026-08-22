@@ -22,6 +22,9 @@ public class AppDbContext : DbContext
 
     public DbSet<WorkflowStep> WorkflowSteps => Set<WorkflowStep>();
 
+    public DbSet<WorkflowDefinition> WorkflowDefinitions { get; set; }
+    public DbSet<WorkflowStepDefinition> WorkflowStepDefinitions { get; set; }
+
     public DbSet<WorkflowComment> WorkflowComments => Set<WorkflowComment>();
 
     public DbSet<WorkflowAttachment> WorkflowAttachments => Set<WorkflowAttachment>();
@@ -46,6 +49,24 @@ public class AppDbContext : DbContext
             .HasOne(c => c.User)
             .WithMany(u => u.Comments)
             .HasForeignKey(c => c.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<WorkflowDefinition>()
+            .HasOne(w => w.RequestType)
+            .WithMany(r => r.WorkflowDefinitions)
+            .HasForeignKey(w => w.RequestTypeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<WorkflowStepDefinition>()
+            .HasOne(s => s.WorkflowDefinition)
+            .WithMany(w => w.Steps)
+            .HasForeignKey(s => s.WorkflowDefinitionId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<WorkflowStepDefinition>()
+            .HasOne(s => s.Role)
+            .WithMany()
+            .HasForeignKey(s => s.RoleId)
             .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<Notification>()

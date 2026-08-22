@@ -13,49 +13,77 @@ public class WorkflowApprovalService : IWorkflowApprovalService
     private readonly ICurrentUserService _currentUser;
     private readonly IWorkflowHistoryService _workflowHistoryService;
     private readonly INotificationService _notificationService;
+    private readonly IWorkflowDefinitionService _workflowDefinitionService;
     public WorkflowApprovalService(
     IWorkflowStepRepository workflowStepRepository,
     IUserRepository userRepository,
     ICurrentUserService currentUser,
     IWorkflowHistoryService workflowHistoryService,
-    INotificationService notificationService)
+    INotificationService notificationService,
+    IWorkflowDefinitionService workflowDefinitionService)
     {
         _workflowStepRepository = workflowStepRepository;
         _userRepository = userRepository;
         _currentUser = currentUser;
         _workflowHistoryService = workflowHistoryService;
         _notificationService = notificationService;
+        _workflowDefinitionService = workflowDefinitionService;
     }
 
     public async Task InitializeWorkflowAsync(WorkflowRequest workflowRequest)
     {
-        var approvalChain = new[]
+        var workflowDefinition =
+            await _workflowDefinitionService.GetActiveWorkflowAsync(
+                workflowRequest.RequestTypeId);
+
+        if (workflowDefinition is null)
         {
-            new { Sequence = 1, RoleId = RoleIds.Supervisor },
-            new { Sequence = 2, RoleId = RoleIds.Manager },
-            new { Sequence = 3, RoleId = RoleIds.Director }
-        };
+            throw new InvalidOperationException(
+                $"No active workflow definition found for request type ID {workflowRequest.RequestTypeId}.");
+        }
+
+        if (workflowDefinition.Steps.Count == 0)
+        {
+            throw new InvalidOperationException(
+                $"Workflow definition '{workflowDefinition.Name}' has no steps.");
+        }
 
         var workflowSteps = new List<WorkflowStep>();
 
-        foreach (var step in approvalChain)
+        foreach (var stepDefinition in workflowDefinition.Steps
+            .OrderBy(s => s.Sequence))
         {
-            var approver = await _userRepository.GetFirstByRoleAsync(step.RoleId);
+            if (stepDefinition.ApproverType == WorkflowApproverType.Role)
+            {
+                if (!stepDefinition.RoleId.HasValue)
+                {
+                    throw new InvalidOperationException(
+                        $"Workflow step {stepDefinition.Id} requires a role.");
+                }
 
-            if (approver is null)
+                var approver = await _userRepository
+                    .GetFirstByRoleAsync(stepDefinition.RoleId.Value);
+
+                if (approver is null)
+                {
+                    throw new InvalidOperationException(
+                        $"No active approver found for role ID {stepDefinition.RoleId.Value}.");
+                }
+
+                workflowSteps.Add(new WorkflowStep
+                {
+                    WorkflowRequestId = workflowRequest.Id,
+                    Sequence = stepDefinition.Sequence,
+                    RoleId = stepDefinition.RoleId.Value,
+                    ApproverUserId = approver.Id,
+                    Status = RequestStatus.Pending
+                });
+            }
+            else
             {
                 throw new InvalidOperationException(
-                    $"No active approver found for role ID {step.RoleId}.");
+                    $"Approver type '{stepDefinition.ApproverType}' is not implemented yet.");
             }
-
-            workflowSteps.Add(new WorkflowStep
-            {
-                WorkflowRequestId = workflowRequest.Id,
-                Sequence = step.Sequence,
-                RoleId = step.RoleId,
-                ApproverUserId = approver.Id,
-                Status = RequestStatus.Pending
-            });
         }
 
         await _workflowStepRepository.AddRangeAsync(workflowSteps);
@@ -76,10 +104,18 @@ public class WorkflowApprovalService : IWorkflowApprovalService
                 "You are not assigned to approve this workflow.");
         }
 
+        var approverRole = currentStep.Role?.Name ?? "Approver";
+
         currentStep.Status = RequestStatus.Approved;
         currentStep.CompletedAt = DateTime.UtcNow;
 
         var request = currentStep.WorkflowRequest;
+
+        if (request.CreatedByUserId == _currentUser.UserId)
+        {
+            throw new UnauthorizedAccessException(
+                "You cannot approve your own workflow request.");
+        }
 
         var nextStep = await _workflowStepRepository.GetNextStepAsync(
             workflowRequestId,
@@ -122,9 +158,10 @@ public class WorkflowApprovalService : IWorkflowApprovalService
             workflowRequestId,
             WorkflowAction.Approved,
             RequestStatus.Pending,
-            newStatus);
+            newStatus,
+            $"Step {currentStep.Sequence} approved by {approverRole}.");
 
-        
+
     }
 
     public async Task RejectAsync(int workflowRequestId, string reason)
@@ -141,10 +178,18 @@ public class WorkflowApprovalService : IWorkflowApprovalService
                 "You are not assigned to reject this workflow.");
         }
 
+        var approverRole = currentStep.Role?.Name ?? "Approver";
+
         currentStep.Status = RequestStatus.Rejected;
         currentStep.CompletedAt = DateTime.UtcNow;
 
         var request = currentStep.WorkflowRequest;
+
+        if (request.CreatedByUserId == _currentUser.UserId)
+        {
+            throw new UnauthorizedAccessException(
+                "You cannot reject your own workflow request.");
+        }
 
         request.Status = RequestStatus.Rejected;
 
@@ -161,7 +206,8 @@ public class WorkflowApprovalService : IWorkflowApprovalService
             workflowRequestId,
             WorkflowAction.Rejected,
             RequestStatus.Pending,
-            RequestStatus.Rejected);
+            RequestStatus.Rejected,
+            $"Step {currentStep.Sequence} rejected by {approverRole}. Reason: {reason}");
     }
 
     public async Task<List<PendingApprovalDto>> GetPendingApprovalsAsync()

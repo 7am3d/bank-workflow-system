@@ -49,9 +49,12 @@ public class WorkflowStepRepository : IWorkflowStepRepository
     {
         return await _context.WorkflowSteps
             .Include(ws => ws.WorkflowRequest)
+            .Include(ws => ws.Role)
+            .Include(ws => ws.ApproverUser)
             .FirstOrDefaultAsync(ws =>
                 ws.WorkflowRequestId == workflowRequestId &&
-                ws.Status == RequestStatus.Pending);
+                ws.Status == RequestStatus.Pending &&
+                ws.Sequence == ws.WorkflowRequest.CurrentStep);
     }
 
     public async Task<WorkflowStep?> GetByIdAsync(int id)
@@ -75,7 +78,9 @@ public class WorkflowStepRepository : IWorkflowStepRepository
     {
         return await _context.WorkflowSteps.CountAsync(step =>
             step.ApproverUserId == userId &&
-            step.Status == RequestStatus.Pending);
+            step.Status == RequestStatus.Pending &&
+            step.Sequence == step.WorkflowRequest.CurrentStep &&
+            step.WorkflowRequest.Status == RequestStatus.Pending);
     }
 
     public async Task<List<WorkflowStep>> GetPendingApprovalsAsync(
@@ -87,7 +92,9 @@ public class WorkflowStepRepository : IWorkflowStepRepository
                 .ThenInclude(r => r.CreatedByUser)
             .Where(s =>
                 s.ApproverUserId == userId &&
-                s.Status == RequestStatus.Pending)
+                s.Status == RequestStatus.Pending &&
+                s.Sequence == s.WorkflowRequest.CurrentStep &&
+                s.WorkflowRequest.Status == RequestStatus.Pending)
             .OrderByDescending(s => s.WorkflowRequest.CreatedAt)
             .Take(count)
             .ToListAsync();
@@ -100,7 +107,9 @@ public class WorkflowStepRepository : IWorkflowStepRepository
                 .ThenInclude(r => r.CreatedByUser)
             .Where(s =>
                 s.ApproverUserId == userId &&
-                s.Status == RequestStatus.Pending)
+                s.Status == RequestStatus.Pending &&
+                s.Sequence == s.WorkflowRequest.CurrentStep &&
+                s.WorkflowRequest.Status == RequestStatus.Pending)
             .OrderByDescending(s => s.WorkflowRequest.CreatedAt)
             .ToListAsync();
     }

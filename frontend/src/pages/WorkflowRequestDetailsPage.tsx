@@ -12,6 +12,7 @@ interface WorkflowRequest {
     priority: string;
     currentStep: number;
     createdAt: string;
+    canCurrentUserAct: boolean;
 }
 
 interface WorkflowHistory {
@@ -164,7 +165,7 @@ function WorkflowRequestDetailsPage() {
                 </p>
             </div>
 
-            {request.status === "Pending" && (
+            {request.status === "Pending" && request.canCurrentUserAct && (
                 <div className="dashboard-section">
                     <h2>Workflow Actions</h2>
 
@@ -204,12 +205,13 @@ function WorkflowRequestDetailsPage() {
                             <div className="history-content">
                                 <h3>{item.action}</h3>
 
-                                <p>
-                                    {item.previousStatus
-                                        ? `${item.previousStatus} → ${item.newStatus}`
-                                        : item.newStatus}
-                                </p>
-
+                                {item.previousStatus && item.previousStatus !== item.newStatus ? (
+                                    <p>
+                                        {item.previousStatus} → {item.newStatus}
+                                    </p>
+                                ) : item.previousStatus === null ? (
+                                    <p>{item.newStatus}</p>
+                                ) : null}
                                 {item.details && (
                                     <p>{item.details}</p>
                                 )}

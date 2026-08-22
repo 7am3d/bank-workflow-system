@@ -1,6 +1,6 @@
 ﻿namespace BankWorkflow.API.Models;
 
-public class RequestType
+public class WorkflowDefinition
 {
     public int Id { get; set; }
 
@@ -10,11 +10,13 @@ public class RequestType
 
     public bool IsActive { get; set; } = true;
 
+    public int RequestTypeId { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    // Navigation Property
-    public ICollection<WorkflowRequest> WorkflowRequests { get; set; } = new List<WorkflowRequest>();
+    // Navigation Properties
+    public RequestType RequestType { get; set; } = null!;
 
-    public ICollection<WorkflowDefinition> WorkflowDefinitions { get; set; }
-    = new List<WorkflowDefinition>();
+    public ICollection<WorkflowStepDefinition> Steps { get; set; }
+        = new List<WorkflowStepDefinition>();
 }

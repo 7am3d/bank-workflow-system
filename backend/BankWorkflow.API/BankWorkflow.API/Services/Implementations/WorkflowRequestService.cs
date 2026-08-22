@@ -15,6 +15,7 @@ public class WorkflowRequestService : IWorkflowRequestService
     private readonly ICurrentUserService _currentUser;
     private readonly IWorkflowApprovalService _workflowApprovalService;
     private readonly IWorkflowHistoryService _workflowHistoryService;
+    private readonly IWorkflowStepRepository _workflowStepRepository;
 
     public WorkflowRequestService(
         IWorkflowRequestRepository workflowRepository,
@@ -22,7 +23,8 @@ public class WorkflowRequestService : IWorkflowRequestService
         IRequestTypeRepository requestTypeRepository,
         ICurrentUserService currentUser,
         IWorkflowApprovalService workflowApprovalService,
-        IWorkflowHistoryService workflowHistoryService)
+        IWorkflowHistoryService workflowHistoryService,
+        IWorkflowStepRepository workflowStepRepository)
     {
         _workflowRepository = workflowRepository;
         _userRepository = userRepository;
@@ -30,6 +32,7 @@ public class WorkflowRequestService : IWorkflowRequestService
         _currentUser = currentUser;
         _workflowApprovalService = workflowApprovalService;
         _workflowHistoryService = workflowHistoryService;
+        _workflowStepRepository = workflowStepRepository;
     }
 
     public async Task<List<WorkflowRequestDto>> GetAllAsync(
@@ -58,7 +61,19 @@ public class WorkflowRequestService : IWorkflowRequestService
         if (request is null)
             return null;
 
-        return WorkflowRequestMapper.ToDto(request);
+        var dto = WorkflowRequestMapper.ToDto(request);
+
+        if (request.Status == RequestStatus.Pending)
+        {
+            var currentStep =
+                await _workflowStepRepository.GetCurrentPendingStepAsync(id);
+
+            dto.CanCurrentUserAct =
+                request.CreatedByUserId != _currentUser.UserId &&
+                currentStep?.ApproverUserId == _currentUser.UserId;
+        }
+
+        return dto;
     }
 
     public async Task<WorkflowRequestDto> CreateAsync(CreateWorkflowRequestDto dto)

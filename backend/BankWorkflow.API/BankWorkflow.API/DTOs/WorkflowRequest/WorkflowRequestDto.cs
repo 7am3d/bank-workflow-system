@@ -21,4 +21,6 @@ public class WorkflowRequestDto
     public int CurrentStep { get; set; }
 
     public DateTime CreatedAt { get; set; }
+
+    public bool CanCurrentUserAct { get; set; }
 }

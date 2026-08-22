@@ -35,6 +35,7 @@ builder.Services.AddScoped<IWorkflowHistoryRepository, WorkflowHistoryRepository
 builder.Services.AddScoped<IWorkflowCommentRepository, WorkflowCommentRepository>();
 builder.Services.AddScoped<IWorkflowAttachmentRepository, WorkflowAttachmentRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<IWorkflowDefinitionRepository, WorkflowDefinitionRepository>();
 
 // Services
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -49,6 +50,7 @@ builder.Services.AddScoped<IWorkflowCommentService, WorkflowCommentService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IWorkflowAttachmentService, WorkflowAttachmentService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IWorkflowDefinitionService, WorkflowDefinitionService>();
 
 // ==========================
 // CORS

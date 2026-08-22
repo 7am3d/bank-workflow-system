@@ -1,6 +1,10 @@
-﻿import { useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import {
+    getRequestTypes,
+    type RequestType,
+} from "../services/requestTypeService";
 
 function CreateWorkflowRequestPage() {
     const navigate = useNavigate();
@@ -8,10 +12,33 @@ function CreateWorkflowRequestPage() {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [requestTypeId, setRequestTypeId] = useState(1);
+    const [requestTypes, setRequestTypes] = useState<RequestType[]>([]);
+    const [requestTypesLoading, setRequestTypesLoading] = useState(true);
     const [priority, setPriority] = useState("Medium");
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+
+    useEffect(() => {
+        const loadRequestTypes = async () => {
+            try {
+                const types = await getRequestTypes();
+
+                setRequestTypes(types);
+
+                if (types.length > 0) {
+                    setRequestTypeId(types[0].id);
+                }
+            } catch (err) {
+                console.error(err);
+                setError("Failed to load request types.");
+            } finally {
+                setRequestTypesLoading(false);
+            }
+        };
+
+        loadRequestTypes();
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -93,10 +120,20 @@ function CreateWorkflowRequestPage() {
                             onChange={(e) =>
                                 setRequestTypeId(Number(e.target.value))
                             }
+                            disabled={requestTypesLoading}
                         >
-                            <option value={1}>
-                                Leave Request
-                            </option>
+                            {requestTypesLoading ? (
+                                <option value="">Loading request types...</option>
+                            ) : (
+                                requestTypes.map((requestType) => (
+                                    <option
+                                        key={requestType.id}
+                                        value={requestType.id}
+                                    >
+                                        {requestType.name}
+                                    </option>
+                                ))
+                            )}
                         </select>
                     </div>
 

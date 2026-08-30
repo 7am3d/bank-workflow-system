@@ -15,15 +15,14 @@ public class WorkflowRequestsController : ControllerBase
     private readonly IWorkflowHistoryService _historyService;
 
     public WorkflowRequestsController(
-        IWorkflowRequestService service,
-        IWorkflowApprovalService approvalService,
-        IWorkflowHistoryService historyService)
+    IWorkflowRequestService service,
+    IWorkflowApprovalService approvalService,
+    IWorkflowHistoryService historyService)
     {
         _service = service;
         _approvalService = approvalService;
         _historyService = historyService;
     }
-
     [HttpGet]
     public async Task<IActionResult> GetAll(
     [FromQuery] WorkflowRequestFilterDto filter)

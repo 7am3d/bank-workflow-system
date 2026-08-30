@@ -1,6 +1,4 @@
-﻿using BankWorkflow.API.Common;
-using BankWorkflow.API.Common.Mappers;
-using BankWorkflow.API.DTOs.WorkflowComment;
+﻿using BankWorkflow.API.DTOs.WorkflowComment;
 using BankWorkflow.API.Models;
 using BankWorkflow.API.Repositories.Interfaces;
 using BankWorkflow.API.Services.Interfaces;
@@ -10,30 +8,45 @@ namespace BankWorkflow.API.Services.Implementations;
 public class WorkflowCommentService : IWorkflowCommentService
 {
     private readonly IWorkflowCommentRepository _commentRepository;
-    private readonly IWorkflowRequestRepository _workflowRepository;
+    private readonly IWorkflowRequestRepository _workflowRequestRepository;
+    private readonly IUserRepository _userRepository;
     private readonly ICurrentUserService _currentUser;
-    private readonly IWorkflowHistoryService _historyService;
 
     public WorkflowCommentService(
         IWorkflowCommentRepository commentRepository,
-        IWorkflowRequestRepository workflowRepository,
-        ICurrentUserService currentUser,
-        IWorkflowHistoryService historyService)
+        IWorkflowRequestRepository workflowRequestRepository,
+        IUserRepository userRepository,
+        ICurrentUserService currentUser)
     {
         _commentRepository = commentRepository;
-        _workflowRepository = workflowRepository;
+        _workflowRequestRepository = workflowRequestRepository;
+        _userRepository = userRepository;
         _currentUser = currentUser;
-        _historyService = historyService;
     }
 
-    public async Task<List<WorkflowCommentDto>> GetByWorkflowRequestIdAsync(
-        int workflowRequestId)
+    public async Task<List<WorkflowCommentDto>>
+        GetByWorkflowRequestIdAsync(int workflowRequestId)
     {
+        var request = await _workflowRequestRepository
+            .GetByIdAsync(workflowRequestId);
+
+        if (request is null)
+        {
+            throw new InvalidOperationException(
+                "Workflow request not found.");
+        }
+
         var comments = await _commentRepository
             .GetByWorkflowRequestIdAsync(workflowRequestId);
 
         return comments
-            .Select(WorkflowCommentMapper.ToDto)
+            .Select(c => new WorkflowCommentDto
+            {
+                Id = c.Id,
+                Comment = c.Comment,
+                UserName = $"{c.User.FirstName} {c.User.LastName}",
+                CreatedAt = c.CreatedAt
+            })
             .ToList();
     }
 
@@ -41,31 +54,47 @@ public class WorkflowCommentService : IWorkflowCommentService
         int workflowRequestId,
         CreateWorkflowCommentDto dto)
     {
-        var request = await _workflowRepository.GetByIdAsync(workflowRequestId);
+        var request = await _workflowRequestRepository
+            .GetByIdAsync(workflowRequestId);
 
         if (request is null)
-            throw new InvalidOperationException("Workflow request not found.");
+        {
+            throw new InvalidOperationException(
+                "Workflow request not found.");
+        }
+
+        if (string.IsNullOrWhiteSpace(dto.Comment))
+        {
+            throw new InvalidOperationException(
+                "Comment cannot be empty.");
+        }
+
+        var user = await _userRepository
+            .GetByIdAsync(_currentUser.UserId);
+
+        if (user is null)
+        {
+            throw new InvalidOperationException(
+                "User not found.");
+        }
 
         var comment = new WorkflowComment
         {
             WorkflowRequestId = workflowRequestId,
             UserId = _currentUser.UserId,
-            Comment = dto.Comment
+            Comment = dto.Comment.Trim(),
+            CreatedAt = DateTime.UtcNow
         };
 
         await _commentRepository.AddAsync(comment);
         await _commentRepository.SaveChangesAsync();
 
-        await _historyService.LogAsync(
-            workflowRequestId,
-            WorkflowAction.CommentAdded,
-            request.Status,
-            request.Status,
-            dto.Comment);
-
-        var comments = await _commentRepository
-            .GetByWorkflowRequestIdAsync(workflowRequestId);
-
-        return WorkflowCommentMapper.ToDto(comments.Last());
+        return new WorkflowCommentDto
+        {
+            Id = comment.Id,
+            Comment = comment.Comment,
+            UserName = $"{user.FirstName} {user.LastName}",
+            CreatedAt = comment.CreatedAt
+        };
     }
 }

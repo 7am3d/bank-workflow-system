@@ -12,7 +12,7 @@ public static class WorkflowCommentMapper
             Id = comment.Id,
             Comment = comment.Comment,
             CreatedAt = comment.CreatedAt,
-            User = $"{comment.User.FirstName} {comment.User.LastName}"
+            UserName = $"{comment.User.FirstName} {comment.User.LastName}"
         };
     }
 }

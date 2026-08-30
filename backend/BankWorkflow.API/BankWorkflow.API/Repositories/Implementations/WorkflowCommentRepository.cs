@@ -14,7 +14,8 @@ public class WorkflowCommentRepository : IWorkflowCommentRepository
         _context = context;
     }
 
-    public async Task<List<WorkflowComment>> GetByWorkflowRequestIdAsync(int workflowRequestId)
+    public async Task<List<WorkflowComment>> GetByWorkflowRequestIdAsync(
+        int workflowRequestId)
     {
         return await _context.WorkflowComments
             .Include(c => c.User)
